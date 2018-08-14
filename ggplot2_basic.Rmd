@@ -13,6 +13,7 @@ library(ggplot2)
 ```{r}
 data1 <- dapa_IV_oral %>% filter(OCC == 1)
 data1 <- data1 %>% mutate(GENDER = ifelse(GENDER == 0, "Male","Female"))
+data2 <- dapa_IV_oral
 ```
 
 2) Basic Concentration-Time plot (point and lines)
