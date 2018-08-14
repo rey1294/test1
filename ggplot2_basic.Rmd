@@ -1,0 +1,119 @@
+# Introduction to ggplot2
+
+```{r}
+library(PKPDmisc)
+library(tidyverse)
+library(ggplot2)
+```
+
+## XY Plots
+
+1) For concentration-time plots filter only OCC 1 from dapa_IV_oral (in PKPDdatasets) for subsequent plotting
+
+```{r}
+data1 <- dapa_IV_oral %>% filter(OCC == 1)
+data1 <- data1 %>% mutate(GENDER = ifelse(GENDER == 0, "Male","Female"))
+```
+
+2) Basic Concentration-Time plot (point and lines)
+
+```{r}
+ggplot(data = data1) + geom_point(mapping = aes(x = TIME, y = COBS)) +
+  geom_line(mapping = aes(x = TIME, y = COBS, group = ID)) + 
+    xlab("Time") + ylab("Concentration") + ggtitle("Concentration-Time plot")
+
+```
+
+
+
+3) make points/lines bigger
+```{r}
+ggplot(data = data1) + geom_point(mapping = aes(x = TIME, y = COBS), size = 3) +
+  geom_line(mapping = aes(x = TIME, y = COBS, group = ID), size = 2) + 
+    xlab("Time") + ylab("Concentration") + ggtitle("Concentration-Time plot")
+
+```
+
+
+4) add log transformation to y axis
+
+```{r}
+ggplot(data = data1) + geom_point(mapping = aes(x = TIME, y = COBS)) +
+  geom_line(mapping = aes(x = TIME, y = COBS, group = ID)) + 
+    xlab("Time") + ylab("Concentration") + scale_y_log10() + ggtitle("Concentration-Time plot")
+
+```
+
+5) Add color by gender
+
+```{r}
+ggplot(data = data1) + geom_point(mapping = aes(x = TIME, y = COBS, color = GENDER)) +
+  geom_line(mapping = aes(x = TIME, y = COBS, group = ID, color = GENDER)) + 
+    xlab("Time") + ylab("Concentration") + ggtitle("Concentration-Time plot")
+
+```
+
+BONUS: rename labels legend
+
+```{r}
+ggplot(data = data1) + geom_point(mapping = aes(x = TIME, y = COBS, color = GENDER)) +
+  geom_line(mapping = aes(x = TIME, y = COBS, group = ID, color = GENDER)) + 
+    xlab("Time") + ylab("Concentration") + ggtitle("Concentration-Time plot")
+```
+BONUS: move legend to top right
+```{r}
+ggplot(data = data1) + geom_point(mapping = aes(x = TIME, y = COBS, color = GENDER)) +
+  geom_line(mapping = aes(x = TIME, y = COBS, group = ID, color = GENDER)) + 
+    xlab("Time") + ylab("Concentration") + ggtitle("Concentration-Time plot") + theme(legend.justification = "top")
+```
+
+7) rename facet strips by name
+```{r}
+ggplot(data = data1) + geom_point(mapping = aes(x = TIME, y = COBS, color = GENDER)) +
+  geom_line(mapping = aes(x = TIME, y = COBS, group = ID, color = GENDER)) + 
+    xlab("Time") + ylab("Concentration") + ggtitle("Concentration-Time plot (faceted by ID)") +    theme(legend.justification = "top") + facet_wrap(~ ID, nrow = 2)
+ggplot(data = data1) + geom_point(mapping = aes(x = TIME, y = COBS, color = GENDER)) +
+  geom_line(mapping = aes(x = TIME, y = COBS, group = ID, color = GENDER)) + 
+    xlab("Time") + ylab("Concentration") + ggtitle("Concentration-Time plot") +    theme(legend.justification = "top") + facet_wrap(~ GENDER, nrow = 2)
+
+```
+
+
+8) rename axes
+
+
+
+## Boxplots and Histograms
+
+* Histogram(s) of demographics
+
+```{r}
+# distinct is a dplyr verb - easiest way to subset data by the 
+# first row in some combination.
+sid_data <- data1 %>% 
+    distinct(ID, .keep_all = TRUE) # single row per id data
+
+ggplot(sid_data, aes(AGE)) + geom_histogram() + 
+    xlab("Age") + ylab("Number of subjects") + ggtitle("") 
+
+```
+
+* add vertical line for median value
+```{r}
+
+ggplot(sid_data, aes(AGE)) + geom_histogram() + 
+    xlab("Age") + ylab("Number of subjects") + ggtitle("") + geom_vline(aes(xintercept = median(AGE)), size = 2)
+
+```
+* put the numeric value of the vertical line as text next to the line on the plot
+```{r}
+
+ggplot(sid_data, aes(AGE)) + geom_histogram() + 
+    xlab("Age") + ylab("Number of subjects") + ggtitle("") + geom_vline(aes(xintercept =  median(AGE)), size = 2, linetype = "dashed") + geom_text(data = sid_data, aes(x = median(AGE), y = 0, label = median(AGE)), size = 4, vjust = -1.5)
+
+```
+
+```{r}
+devtools::session_info()
+```
+
